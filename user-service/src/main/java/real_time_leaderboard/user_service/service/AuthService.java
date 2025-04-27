@@ -1,6 +1,7 @@
 package real_time_leaderboard.user_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import real_time_leaderboard.user_service.dto.AuthRequest;
@@ -17,25 +18,33 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final StringRedisTemplate redisTemplate;
     private final UsuarioRegistradoPublisher usuarioRegistradoPublisher;
 
+
+    // Registrarr usuario y almacenar en base de datos mongodb
     public String register(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("El correo electrónico ya está en uso");
+        }
+
+        // Encriptar la contraseña
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
-        usuarioRegistradoPublisher.publicarEvento(
-                UsuarioRegistradoEvent.builder()
-                        .userId(savedUser.getId())
-                        .email(savedUser.getEmail())
-                        .nombre(savedUser.getNombre())
-                        .build()
-        );
+        // Publicar el evento de usuario registrado
+        UsuarioRegistradoEvent event = UsuarioRegistradoEvent.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .nombre(user.getNombre())
+                .build();
+        usuarioRegistradoPublisher.publish(event);
 
-        return "Usuario registrado con éxito con contraseña: " + user.getPassword();
+        return "Usuario registrado exitosamente";
     }
 
-
-    public AuthResponse authenticate(AuthRequest request) {
+    // login
+    public AuthResponse login(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -45,5 +54,20 @@ public class AuthService {
 
         String token = jwtService.generateToken(user);
         return new AuthResponse(token);
+    }
+
+    // logout invalidar token y almacenar en base de datos redis
+    public void logout(String token) {
+        // Verrificar si el token es válido y no ha expirado
+        if (!jwtService.isTokenValid(token)) {
+            throw new RuntimeException("Token inválido o expirado");
+        }
+        // Revisar si el token no esta ya almacenado en redis
+        String key = "auth:token:" + token;
+        if (redisTemplate.hasKey(key)) {
+            throw new RuntimeException("Token ya invalidado");
+        }
+        // Almacenar el token en redis con un tiempo de expiración
+        redisTemplate.opsForValue().set(key, "invalid", 2, java.util.concurrent.TimeUnit.HOURS);
     }
 }

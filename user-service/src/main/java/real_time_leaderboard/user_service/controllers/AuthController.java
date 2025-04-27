@@ -16,12 +16,24 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
+        AuthResponse authResponse = authService.login(authRequest);
+        return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
-        return ResponseEntity.ok(authService.register(user));
+        String response = authService.register(user);
+        return ResponseEntity.ok(response);
+    }
+
+    // Logout
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        authService.logout(token);
+        return ResponseEntity.ok("Token invalidated successfully");
     }
 }

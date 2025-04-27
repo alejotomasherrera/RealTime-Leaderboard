@@ -31,7 +31,13 @@ public class JwtService {
                 .getSubject();
     }
 
-    public boolean isTokenValid(String token, User user) {
-        return extractUsername(token).equals(user.getEmail());
+    public boolean isTokenValid(String token) {
+        try {
+            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }
