@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: score-service
+          uri: lb://SCORE-SERVICE
+          predicates:
+            - Path=/api/scores/**
+          filters:
+            - TokenRelay
+        - id: score-service-websocket
+          uri: lb://SCORE-SERVICE
+          predicates:
+            - Path=/ws/scores/**
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - TokenRelay
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/api/auth
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

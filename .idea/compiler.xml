@@ -8,15 +8,15 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="eureka-service" />
-        <module name="gateway-service" />
-        <module name="ranking-service" />
-        <module name="report-service" />
         <module name="user-service" />
+        <module name="gateway-service" />
         <module name="score-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="common" target="21" />
+      <module name="ranking-service" target="21" />
+      <module name="report-service" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

@@ -37,10 +37,8 @@
     </dependencyManagement>
 
     <modules>
-        <module>ranking-service</module>
         <module>user-service</module>
         <module>score-service</module>
-        <module>report-service</module>
     </modules>
 
     <build>

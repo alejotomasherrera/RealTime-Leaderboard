@@ -1,4 +1,4 @@
-package real_time_leaderboard.user_service.model;
+package real_time_leaderboard.score_service.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

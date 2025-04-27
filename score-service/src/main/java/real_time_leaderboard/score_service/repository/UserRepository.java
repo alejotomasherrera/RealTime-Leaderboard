@@ -1,10 +1,9 @@
-package real_time_leaderboard.user_service.repository;
+package real_time_leaderboard.score_service.repository;
 
-import real_time_leaderboard.user_service.model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import real_time_leaderboard.score_service.model.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, String> {

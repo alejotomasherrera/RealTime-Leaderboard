@@ -21,7 +21,6 @@ public class AuthService {
     private final StringRedisTemplate redisTemplate;
     private final UsuarioRegistradoPublisher usuarioRegistradoPublisher;
 
-
     // Registrarr usuario y almacenar en base de datos mongodb
     public String register(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
