@@ -2,6 +2,10 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: GATEWAY-SERVICE
+  main:
+    web-application-type: reactive  # Especificar tipo de aplicación reactiva
   cloud:
     gateway:
       discovery:
@@ -13,8 +17,6 @@ spring:
           uri: lb://SCORE-SERVICE
           predicates:
             - Path=/api/scores/**
-          filters:
-            - TokenRelay
         - id: score-service-websocket
           uri: lb://SCORE-SERVICE
           predicates:
@@ -23,13 +25,10 @@ spring:
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/users/**
-          filters:
-            - TokenRelay
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8081/api/auth
+        - id: user-service-auth
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/auth/**
 
 eureka:
   client:
@@ -37,3 +36,9 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
+    reactor.netty: DEBUG

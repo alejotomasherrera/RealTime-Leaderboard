@@ -16,6 +16,7 @@
     <bytecodeTargetLevel>
       <module name="common" target="21" />
       <module name="ranking-service" target="21" />
+      <module name="real-time-leaderboard" target="21" />
       <module name="report-service" target="21" />
     </bytecodeTargetLevel>
   </component>

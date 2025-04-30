@@ -21,21 +21,21 @@ public class ScoreController {
 
     @PostMapping
     public ResponseEntity<String> addScore(@RequestHeader("Authorization") String token, @RequestBody AddScoreRequest request) {
-        jwtService.validateTokenOrThrow(token);
+        jwtService.isTokenValid(token);
         scoreService.addScore(request.getPlayerId(), request.getScoreNum());
         return ResponseEntity.ok("Score added successfully");
     }
 
     @GetMapping("/top/{topN}")
     public ResponseEntity<Set<TypedTuple<String>>> getTopScores(@RequestHeader("Authorization") String token, @PathVariable int topN) {
-        jwtService.validateTokenOrThrow(token);
+        jwtService.isTokenValid(token);
         return ResponseEntity.ok(scoreService.getTopScores(topN));
     }
 
     // GetAll Scores paginado
     @GetMapping("/all/{page}/{size}")
     public ResponseEntity<Set<TypedTuple<String>>> getAllScores(@RequestHeader("Authorization") String token, @PathVariable int page, @PathVariable int size) {
-        jwtService.validateTokenOrThrow(token);
+        jwtService.isTokenValid(token);
         return ResponseEntity.ok(scoreService.getAllScores(page, size));
     }
 
